@@ -1,28 +1,37 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { View, Text, TextInput, Pressable, Alert, StyleSheet } from "react-native";
+import { View, Text, TextInput, Pressable } from "react-native";
 import Navbar from "../components/Navbar";
-import { loginStyles } from "../styles/loginStyles";
+import { loginStyles as styles } from "../styles/loginStyles.js";
 
 export default function LoginScreen() {
   // 1. États locaux pour les champs du formulaire
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  // 2. Récupération de loginUser depuis le contexte
+  // 2. Récupération de la fonction loginUser depuis le contexte d'authentification
   const { loginUser } = useAuth();
 
-  // 3. Soumission : appel API asynchrone, erreur affichée si échec
+  // 3. Soumission du formulaire : PAS de navigation.navigate() ici.
+  // C'est le changement de user dans le contexte qui fait basculer AppNavigator
+  // sur le groupe "connecte" (et donc sur Dashboard).
   const handleSubmit = async () => {
+    setSubmitting(true); // Indique que la soumission est en cours
+    setError(""); // Réinitialise l'erreur avant de tenter la connexion
     try {
       await loginUser(login, password);
-    } catch (error) {
-      Alert.alert("Connexion impossible", error.message);
+    } catch (e) {
+      setError(e.message); // Affiche l'erreur à l'utilisateur
+    } finally {
+      setSubmitting(false);
     }
   };
-  // 5. Rend le formulaire
+
+  // 4. Rendu du formulaire de connexion
   return (
-    <View style={styles.screen}>
+    <View style={{ flex: 1 }}>
       <Navbar />
       <View style={styles.container}>
         <Text style={styles.title}>Connexion</Text>
@@ -35,8 +44,9 @@ export default function LoginScreen() {
             onChangeText={setLogin}
           />
         </View>
+
         <View>
-          <Text>Password :</Text>
+          <Text>Mot de passe :</Text>
           <TextInput
             style={styles.input}
             value={password}
@@ -44,30 +54,12 @@ export default function LoginScreen() {
             secureTextEntry
           />
         </View>
-        <Pressable style={styles.button} onPress={handleSubmit}>
-          <Text style={styles.buttonText}>Se connecter</Text>
+
+        <Pressable style={styles.button} onPress={handleSubmit} disabled={submitting}>
+          <Text style={styles.buttonText}>{submitting ? "Connexion..." : "Se connecter"}</Text>
         </Pressable>
+        {error ? <Text style={{ color: "red", marginTop: 12 }}>{error}</Text> : null}
       </View>
     </View>
   );
 }
-const styles = StyleSheet.create({
-  screen: { flex: 1 },
-  container: { flex: 1, justifyContent: "center", padding: 24 },
-  title: { fontSize: 24, fontWeight: "bold", marginBottom: 24, textAlign: "center" },
-  input: {
-    borderWidth: 1,
-    borderColor: "#CCCCCC",
-    borderRadius: 8,
-    padding: 12,
-    marginTop: 4,
-    marginBottom: 16,
-  },
-  button: {
-    backgroundColor: "#333333",
-    borderRadius: 8,
-    padding: 14,
-    alignItems: "center",
-  },
-  buttonText: { color: "#FFFFFF", fontWeight: "bold" },
-});

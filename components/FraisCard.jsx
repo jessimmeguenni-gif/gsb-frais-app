@@ -9,7 +9,7 @@ export default function FraisCard({ frais, onEdit, onDelete }) {
 
   return (
     <View style={styles.card}>
-      {/* Infos prioritaires : quelle note, quel mois, combien */}
+      {/* Infos prioritaires : quelle note (mois) et combien */}
       <Text style={styles.title}>
         Note [{frais.id_frais}] Visiteur n°{frais.id_visiteur} - {frais.anneemois}
       </Text>
@@ -61,7 +61,10 @@ const styles = StyleSheet.create({
     color: "#0E8C7C",
     marginTop: 4,
   },
-  buttonRow: { flexDirection: "row", marginTop: 12 },
+  buttonRow: {
+    flexDirection: "row",
+    marginTop: 12,
+  },
   editButton: {
     backgroundColor: "#E8EAF0",
     borderRadius: 8,

@@ -1,29 +1,26 @@
 import { useState, useEffect } from "react";
 import { View, Text, TextInput, Pressable } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { API_URL } from "../config";
-import { fraisFormStyles as styles } from "../styles/fraisFormStyles";
+import { fraisFormStyles as styles } from "../styles/fraisFormStyles.js";
 
-// Formulaire partagé : ajout (frais = null) ET modification (frais fourni)
-export default function FraisForm({ frais = null }) {
+// Le formulaire ne fait que la saisie : il remonte les valeurs à l'écran via onSubmit
+export default function FraisForm({ frais = null, onSubmit }) {
+  // Utilisé uniquement pour les boutons frais hors forfait / au forfait (pas encore implémentés)
   const navigation = useNavigation();
 
-  // États locaux
-  const [idFrais, setIdFrais] = useState(null);
+  // États locaux du formulaire
   const [anneeMois, setAnneeMois] = useState("");
   const [nbJustificatifs, setNbJustificatifs] = useState("");
   const [montant, setMontant] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Mode modification : on préremplit le formulaire à chaque changement de la prop frais
+  // En mode modification, on préremplit les champs avec le frais reçu
   useEffect(() => {
     if (frais) {
-      setIdFrais(frais.id_frais);
-      setMontant(frais.montantvalide || "");
       setAnneeMois(frais.anneemois || "");
-      setNbJustificatifs(String(frais.nbjustificatifs ?? ""));
+      setNbJustificatifs(String(frais.nbjustificatifs || ""));
+      // Plus tard, on calculera ici le montant saisi à partir des montants des différents frais
     }
   }, [frais]);
 
@@ -31,44 +28,13 @@ export default function FraisForm({ frais = null }) {
     setLoading(true);
     setError("");
     try {
-      const token = await AsyncStorage.getItem("token");
-      if (!token) throw new Error("Token manquant");
-
-      const user = JSON.parse(await AsyncStorage.getItem("user"));
-      const fraisData = {
+      await onSubmit({
         anneemois: anneeMois,
-        id_visiteur: user.id_visiteur,
         nbjustificatifs: parseInt(nbJustificatifs, 10),
-      };
-
-      let url;
-      if (frais) {
-        // Modification (UPDATE)
-        fraisData.id_frais = idFrais;
-        fraisData.montantvalide = parseFloat(montant);
-        fraisData.id_etat = frais.id_etat; // on conserve l'état du frais enregistré
-        url = `${API_URL}frais/modif`;
-      } else {
-        // Ajout (CREATE)
-        url = `${API_URL}frais/ajout`;
-      }
-
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify(fraisData),
       });
-
-      // response.ok vaut true si le code http est entre 200 et 299 (succès)
-      if (!response.ok) {
-        const data = await response.json().catch(() => ({}));
-        throw new Error(data.error || `Erreur HTTP ${response.status}`);
-      }
-
-      navigation.navigate("Dashboard");
     } catch (err) {
       console.error("Erreur:", err);
-      setError(err.message || "Erreur lors de l'enregistrement");
+      setError(err.message || "Erreur lors de l’enregistrement");
     } finally {
       setLoading(false);
     }
@@ -106,7 +72,7 @@ export default function FraisForm({ frais = null }) {
           selectOnFocus={false}
           style={[styles.input, { backgroundColor: "#f0f0f0" }]}
           keyboardType="numeric"
-          value={String(montant)}
+          value={montant}
           onChangeText={setMontant}
         />
       </View>
@@ -120,7 +86,7 @@ export default function FraisForm({ frais = null }) {
         </Pressable>
       </View>
 
-      {error ? <Text style={{ color: "red", marginBottom: 12 }}>{error}</Text> : null}
+      {error ? <Text style={styles.error}>{error}</Text> : null}
 
       <Pressable
         style={[styles.button, loading && styles.buttonDisabled]}

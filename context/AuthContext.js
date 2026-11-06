@@ -7,12 +7,12 @@ const AuthContext = createContext();
 
 // 2. Fournisseur du contexte (AuthProvider)
 export function AuthProvider({ children }) {
-  // États : utilisateur (null = non connecté), token, chargement de la session
+  // États : utilisateur connecté (null = non connecté), token, chargement de la session
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [sessionLoading, setSessionLoading] = useState(true);
 
-  // Restauration de la session au lancement de l'app (une seule fois, au montage)
+  // Restauration de la session au lancement de l'app (une seule fois au montage)
   useEffect(() => {
     const restoreSession = async () => {
       try {
@@ -31,10 +31,16 @@ export function AuthProvider({ children }) {
     restoreSession();
   }, []);
 
-  // 3. Fonction de connexion : appel réel à l'API via le service
+  // 3. Fonction de connexion (appel réel à l'API)
   async function loginUser(login, password) {
-    const data = await signIn(login, password);
-    // Pas de token = identifiants refusés : on lève une erreur pour le catch de LoginScreen
+    let data;
+    try {
+      data = await signIn(login, password);
+    } catch (e) {
+      throw new Error("Impossible de joindre le serveur : vérifiez votre connexion internet.");
+    }
+    // Si l'API ne renvoie pas de token, la connexion a échoué : on lève une erreur
+    // (attrapée par le catch de LoginScreen qui affiche le message)
     if (!data.token) {
       throw new Error(data.error || "Identifiants incorrects");
     }

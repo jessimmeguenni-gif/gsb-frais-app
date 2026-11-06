@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "gsb-frais-app",
+    "name": "GSB Frais",
     "slug": "gsb-frais-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -15,7 +15,8 @@
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
-      }
+      },
+      "package": "com.meguennitani.gsbfrais"
     },
     "web": {
       "favicon": "./assets/favicon.png"

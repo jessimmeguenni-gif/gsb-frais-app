@@ -1,6 +1,5 @@
 import { useState, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   View,
   Text,
@@ -15,7 +14,7 @@ import {
 import FraisCard from "../components/FraisCard";
 import Navbar from "../components/Navbar";
 import { useAuth } from "../context/AuthContext";
-import { API_URL } from "../config";
+import { getFraisList, deleteFrais } from "../services/fraisService";
 
 export default function DashboardScreen({ navigation }) {
   const { user, token } = useAuth();
@@ -26,20 +25,19 @@ export default function DashboardScreen({ navigation }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterNonNull, setFilterNonNull] = useState(true);
   const [minMontant, setMinMontant] = useState("");
+  const [error, setError] = useState("");
 
-  // Rechargement de la liste à CHAQUE retour sur l'écran (après un ajout ou une modification)
+  // Rechargement de la liste à CHAQUE retour sur l'écran (après ajout / modification)
   useFocusEffect(
     useCallback(() => {
       const fetchFrais = async () => {
         try {
-          const response = await fetch(`${API_URL}frais/liste/${user.id_visiteur}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          const data = await response.json();
-          setFraisList(data);
-          setLoading(false);
-        } catch (error) {
-          console.error("Erreur lors de la récupération des frais :", error);
+          setFraisList(await getFraisList(user.id_visiteur, token));
+          setError("");
+        } catch (err) {
+          console.error("Erreur lors de la récupération des frais :", err);
+          setError(err.message);
+        } finally {
           setLoading(false);
         }
       };
@@ -47,38 +45,29 @@ export default function DashboardScreen({ navigation }) {
     }, [user, token])
   );
 
-  // Filtres chaînés :
-  // 1. montant validé non nul (si le Switch est activé)
-  // 2. recherche sur année-mois OU id visiteur
-  // 3. montant validé supérieur au montant saisi (si un montant est saisi)
+  // Filtres chaînés : montant validé non nul (optionnel) → recherche → montant minimum
   const seuil = parseFloat(minMontant.replace(",", "."));
   const filteredFrais = fraisList
     .filter((f) => !filterNonNull || f.montantvalide !== null)
     .filter(
       (frais) =>
-        frais.anneemois.includes(searchTerm) ||
+        String(frais.anneemois).includes(searchTerm) ||
         String(frais.id_visiteur).includes(searchTerm)
     )
     .filter((f) => isNaN(seuil) || (f.montantvalide !== null && parseFloat(f.montantvalide) > seuil));
 
-  // Ouverture du formulaire de modification : on ne transmet que l'id
+  // Ouverture du formulaire de modification : on ne passe que l'id
   function handleEdit(id) {
     navigation.navigate("FraisEdit", { id });
   }
 
-  // Suppression côté API puis dans la liste affichée
-  async function deleteFrais(id) {
+  // Suppression côté API puis côté liste affichée
+  async function removeFrais(id) {
     try {
-      const token = await AsyncStorage.getItem("token");
-      const response = await fetch(`${API_URL}frais/suppr`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ id_frais: id }),
-      });
-      if (!response.ok) throw new Error(`Erreur HTTP ${response.status}`);
+      await deleteFrais(id, token);
       setFraisList((prev) => prev.filter((f) => f.id_frais !== id));
     } catch (error) {
-      console.error("Erreur lors de la suppression:", error);
+      Alert.alert("Erreur lors de la suppression :", error.message);
     }
   }
 
@@ -86,12 +75,12 @@ export default function DashboardScreen({ navigation }) {
   const handleDelete = (id) => {
     const message = "Êtes-vous sûr de vouloir supprimer cette note de frais ?";
     if (Platform.OS === "web") {
-      if (window.confirm(message)) deleteFrais(id);
+      if (window.confirm(message)) removeFrais(id);
       return;
     }
     Alert.alert("Confirmation", message, [
       { text: "Annuler", style: "cancel" },
-      { text: "Supprimer", style: "destructive", onPress: () => deleteFrais(id) },
+      { text: "Supprimer", style: "destructive", onPress: () => removeFrais(id) },
     ]);
   };
 
@@ -124,12 +113,15 @@ export default function DashboardScreen({ navigation }) {
             style={styles.searchInput}
           />
 
+          {error ? <Text style={styles.error}>{error}</Text> : null}
+
           <FlatList
             data={filteredFrais}
             keyExtractor={(item) => String(item.id_frais)}
             renderItem={({ item }) => (
               <FraisCard frais={item} onEdit={handleEdit} onDelete={handleDelete} />
             )}
+            ListEmptyComponent={<Text style={styles.empty}>Aucune note de frais.</Text>}
           />
         </View>
       )}
@@ -157,4 +149,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   filterText: { flex: 1, marginLeft: 8, color: "#161B33" },
+  error: { color: "red", marginBottom: 12 },
+  empty: { textAlign: "center", color: "#5B6270", marginTop: 24 },
 });
