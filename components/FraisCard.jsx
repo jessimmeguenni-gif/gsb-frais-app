@@ -16,7 +16,7 @@ export default function FraisCard({ frais, onEdit, onDelete }) {
       <Text style={styles.montant}>Montant validé : {montantValide}</Text>
       {/* Infos secondaires : plus petites, couleur discrète */}
       <Text style={styles.meta}>
-        État : {frais.lib_etat ?? frais.id_etat} · Justificatifs : {frais.nbjustificatifs}
+        État : {frais.id_etat} · Justificatifs : {frais.nbjustificatifs}
       </Text>
       <Text style={styles.meta}>Modifiée le : {frais.datemodification}</Text>
       <Text style={styles.meta}>Montant saisi : —</Text>

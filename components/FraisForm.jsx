@@ -86,8 +86,6 @@ export default function FraisForm({ frais = null, onSubmit }) {
         </Pressable>
       </View>
 
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-
       <Pressable
         style={[styles.button, loading && styles.buttonDisabled]}
         onPress={handleSubmit}
@@ -97,6 +95,8 @@ export default function FraisForm({ frais = null, onSubmit }) {
           {loading ? "Enregistrement..." : frais ? "Mettre à jour" : "Ajouter"}
         </Text>
       </Pressable>
+
+      {error ? <Text style={styles.error}>{error}</Text> : null}
     </View>
   );
 }

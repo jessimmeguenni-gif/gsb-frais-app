@@ -46,7 +46,7 @@ export default function DashboardScreen({ navigation }) {
   );
 
   // Filtres chaînés : montant validé non nul (optionnel) → recherche → montant minimum
-  const seuil = parseFloat(minMontant.replace(",", "."));
+  const seuil = parseFloat(minMontant);
   const filteredFrais = fraisList
     .filter((f) => !filterNonNull || f.montantvalide !== null)
     .filter(
@@ -121,7 +121,6 @@ export default function DashboardScreen({ navigation }) {
             renderItem={({ item }) => (
               <FraisCard frais={item} onEdit={handleEdit} onDelete={handleDelete} />
             )}
-            ListEmptyComponent={<Text style={styles.empty}>Aucune note de frais.</Text>}
           />
         </View>
       )}
@@ -150,5 +149,4 @@ const styles = StyleSheet.create({
   },
   filterText: { flex: 1, marginLeft: 8, color: "#161B33" },
   error: { color: "red", marginBottom: 12 },
-  empty: { textAlign: "center", color: "#5B6270", marginTop: 24 },
 });

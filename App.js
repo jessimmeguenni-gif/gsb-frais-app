@@ -1,5 +1,4 @@
 import { View, ActivityIndicator } from "react-native";
-import { StatusBar } from "expo-status-bar";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { AuthProvider, useAuth } from "./context/AuthContext";
@@ -31,15 +30,15 @@ function AppNavigator() {
           la pile est vidée et on démarre sur le 1er écran du nouveau groupe */}
       {user ? (
         <Stack.Group navigationKey="connecte">
-          <Stack.Screen name="Dashboard" component={DashboardScreen} options={{ title: "Tableau de bord" }} />
-          <Stack.Screen name="FraisAdd" component={FraisAddScreen} options={{ title: "Nouvelle note" }} />
-          <Stack.Screen name="FraisEdit" component={FraisEditScreen} options={{ title: "Modifier la note" }} />
-          <Stack.Screen name="Home" component={HomeScreen} options={{ title: "Accueil" }} />
+          <Stack.Screen name="Dashboard" component={DashboardScreen} />
+          <Stack.Screen name="FraisAdd" component={FraisAddScreen} />
+          <Stack.Screen name="FraisEdit" component={FraisEditScreen} />
+          <Stack.Screen name="Home" component={HomeScreen} />
         </Stack.Group>
       ) : (
         <Stack.Group navigationKey="invite">
-          <Stack.Screen name="Home" component={HomeScreen} options={{ title: "Accueil" }} />
-          <Stack.Screen name="Login" component={LoginScreen} options={{ title: "Connexion" }} />
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="Login" component={LoginScreen} />
         </Stack.Group>
       )}
     </Stack.Navigator>
@@ -51,7 +50,6 @@ export default function App() {
     <AuthProvider>
       <NavigationContainer>
         <AppNavigator />
-        <StatusBar style="auto" />
       </NavigationContainer>
     </AuthProvider>
   );
