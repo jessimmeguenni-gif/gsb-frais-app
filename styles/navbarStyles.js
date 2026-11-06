@@ -4,11 +4,13 @@ const navbarStyles = StyleSheet.create({
   container: {
     flexDirection: "row",
     justifyContent: "space-between",
+    flexWrap: "wrap",
     padding: 16,
     backgroundColor: "#333",
   },
   group: {
     flexDirection: "row",
+    flexWrap: "wrap",
   },
   link: {
     color: "white",

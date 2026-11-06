@@ -1,7 +1,7 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, Pressable, StyleSheet } from "react-native";
 
-// Carte d'une note de frais : reçoit la note en prop (frais)
-export default function FraisCard({ frais }) {
+// La carte ne fait qu'afficher : les actions (onEdit, onDelete) sont fournies par le parent Dashboard
+export default function FraisCard({ frais, onEdit, onDelete }) {
   const montantValide =
     frais.montantvalide !== null && frais.montantvalide !== undefined
       ? `${parseFloat(frais.montantvalide).toFixed(2)} €`
@@ -20,6 +20,15 @@ export default function FraisCard({ frais }) {
       </Text>
       <Text style={styles.meta}>Modifiée le : {frais.datemodification}</Text>
       <Text style={styles.meta}>Montant saisi : —</Text>
+
+      <View style={styles.buttonRow}>
+        <Pressable onPress={() => onEdit(frais.id_frais)} style={styles.editButton}>
+          <Text style={styles.editText}>Modifier</Text>
+        </Pressable>
+        <Pressable onPress={() => onDelete(frais.id_frais)} style={styles.deleteButton}>
+          <Text style={styles.deleteText}>Supprimer</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -52,4 +61,20 @@ const styles = StyleSheet.create({
     color: "#0E8C7C",
     marginTop: 4,
   },
+  buttonRow: { flexDirection: "row", marginTop: 12 },
+  editButton: {
+    backgroundColor: "#E8EAF0",
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    marginRight: 8,
+  },
+  editText: { color: "#161B33", fontWeight: "600" },
+  deleteButton: {
+    backgroundColor: "#FDE8E8",
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+  },
+  deleteText: { color: "#C0392B", fontWeight: "600" },
 });

@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const API_URL = "http://gsbfrais.julliand.ispconfig.lmdsio.com/api/";
+import { API_URL } from "../config";
 
 // Connexion : envoie login/pwd à l'API, stocke user + token si succès
 export async function signIn(login, pwd) {

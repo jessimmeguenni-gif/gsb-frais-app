@@ -4,6 +4,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "./screens/HomeScreen";
 import LoginScreen from "./screens/LoginScreen";
 import DashboardScreen from "./screens/DashboardScreen";
+import FraisAddScreen from "./screens/FraisAddScreen";
+import FraisEditScreen from "./screens/FraisEditScreen";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 
 const Stack = createNativeStackNavigator();
@@ -20,7 +22,11 @@ function AppNavigator() {
     <Stack.Navigator>
       <Stack.Screen name="Home" component={HomeScreen} />
       {user ? (
-        <Stack.Screen name="Dashboard" component={DashboardScreen} />
+        <>
+          <Stack.Screen name="Dashboard" component={DashboardScreen} />
+          <Stack.Screen name="FraisAdd" component={FraisAddScreen} />
+          <Stack.Screen name="FraisEdit" component={FraisEditScreen} />
+        </>
       ) : (
         <Stack.Screen name="Login" component={LoginScreen} />
       )}
