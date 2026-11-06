@@ -1,3 +1,4 @@
+import { ActivityIndicator } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "./screens/HomeScreen";
@@ -8,13 +9,15 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 const Stack = createNativeStackNavigator();
 
 function AppNavigator() {
-  const { user } = useAuth();
+  const { user, sessionLoading } = useAuth();
+
+  // Écran d'attente pendant la lecture d'AsyncStorage
+  if (sessionLoading) {
+    return <ActivityIndicator size="large" style={{ flex: 1 }} />;
+  }
 
   return (
-    <Stack.Navigator
-      key={user ? "connecte" : "deconnecte"}
-      initialRouteName={user ? "Dashboard" : "Home"}
-    >
+    <Stack.Navigator>
       <Stack.Screen name="Home" component={HomeScreen} />
       {user ? (
         <Stack.Screen name="Dashboard" component={DashboardScreen} />
@@ -33,4 +36,4 @@ export default function App() {
       </NavigationContainer>
     </AuthProvider>
   );
-} 
+}

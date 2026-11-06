@@ -8,13 +8,13 @@ import {
   ActivityIndicator,
   StyleSheet,
 } from "react-native";
-import fraisData from "../data/frais.json";
 import FraisCard from "../components/FraisCard";
 import Navbar from "../components/Navbar";
 import { useAuth } from "../context/AuthContext";
+import { API_URL } from "../services/authService";
 
 export default function DashboardScreen() {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
 
   // États
   const [fraisList, setFraisList] = useState([]);
@@ -23,12 +23,22 @@ export default function DashboardScreen() {
   const [filterNonNull, setFilterNonNull] = useState(true);
   const [minMontant, setMinMontant] = useState("");
 
-  // Simulation d'un appel API avec un délai de 500 ms
+  // Récupération des frais du visiteur connecté depuis l'API (route sécurisée par le token)
   useEffect(() => {
-    setTimeout(() => {
-      setFraisList(fraisData);
-      setLoading(false);
-    }, 500);
+    const fetchFrais = async () => {
+      try {
+        const response = await fetch(`${API_URL}frais/liste/${user.id_visiteur}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await response.json();
+        setFraisList(data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des frais :", error);
+        setLoading(false);
+      }
+    };
+    fetchFrais();
   }, []);
 
   // Filtres chaînés :
@@ -43,7 +53,7 @@ export default function DashboardScreen() {
         frais.anneemois.includes(searchTerm) ||
         String(frais.id_visiteur).includes(searchTerm)
     )
-    .filter((f) => isNaN(seuil) || (f.montantvalide !== null && f.montantvalide > seuil));
+    .filter((f) => isNaN(seuil) || (f.montantvalide !== null && parseFloat(f.montantvalide) > seuil));
 
   return (
     <View style={{ flex: 1 }}>
@@ -52,7 +62,7 @@ export default function DashboardScreen() {
         <ActivityIndicator size="large" style={{ marginTop: 40 }} />
       ) : (
         <View style={styles.container}>
-          <Text style={styles.title}>Tableau de bord de {user}</Text>
+          <Text style={styles.title}>Tableau de bord de {user?.prenom_visiteur}</Text>
 
           <TextInput
             placeholder="Rechercher par année-mois ou ID visiteur..."
