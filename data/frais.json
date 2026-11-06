@@ -1,0 +1,6 @@
+[
+  { "id_frais": 1, "id_etat": 1, "anneemois": "2023-10", "id_visiteur": 101, "nbjustificatifs": 5, "datemodification": "2023-10-15", "montantvalide": null },
+  { "id_frais": 2, "id_etat": 2, "anneemois": "2023-11", "id_visiteur": 102, "nbjustificatifs": 3, "datemodification": "2023-11-20", "montantvalide": 200.50 },
+  { "id_frais": 3, "id_etat": 1, "anneemois": "2023-09", "id_visiteur": 103, "nbjustificatifs": 2, "datemodification": "2023-09-10", "montantvalide": null },
+  { "id_frais": 4, "id_etat": 3, "anneemois": "2023-12", "id_visiteur": 101, "nbjustificatifs": 4, "datemodification": "2023-12-05", "montantvalide": 180.00 }
+]
