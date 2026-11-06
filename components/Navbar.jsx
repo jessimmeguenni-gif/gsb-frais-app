@@ -4,7 +4,6 @@ import { useAuth } from "../context/AuthContext";
 import navbarStyles from "../styles/navbarStyles";
 
 function Navbar() {
-  // Navbar n'est pas un écran : pas de prop navigation, on utilise le hook
   const navigation = useNavigation();
   const { user, logoutUser } = useAuth();
 
@@ -14,7 +13,6 @@ function Navbar() {
         <Pressable onPress={() => navigation.navigate("Home")}>
           <Text style={navbarStyles.link}>Accueil</Text>
         </Pressable>
-        {/* Rendu conditionnel : liens réservés aux utilisateurs connectés */}
         {user && (
           <>
             <Pressable onPress={() => navigation.navigate("Dashboard")}>

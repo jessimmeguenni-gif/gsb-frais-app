@@ -10,12 +10,9 @@ import FraisEditScreen from "./screens/FraisEditScreen";
 
 const Stack = createNativeStackNavigator();
 
-// Composant séparé : il est rendu À L'INTÉRIEUR de AuthProvider,
-// donc useAuth() y a bien accès au contexte.
 function AppNavigator() {
   const { user, sessionLoading } = useAuth();
 
-  // Pendant la lecture d'AsyncStorage, on ne décide pas encore Login / Dashboard
   if (sessionLoading) {
     return (
       <View style={{ flex: 1, justifyContent: "center" }}>

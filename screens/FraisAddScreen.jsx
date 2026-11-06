@@ -8,7 +8,6 @@ export default function FraisAddScreen({ navigation }) {
   const { user, token } = useAuth();
 
   // Appelée par FraisForm avec les valeurs saisies.
-  // Pas de try/catch ici : en cas d'erreur, l'exception remonte au formulaire qui l'affiche.
   async function handleAdd(values) {
     await addFrais({ ...values, id_visiteur: user.id_visiteur }, token);
     navigation.navigate("Dashboard");

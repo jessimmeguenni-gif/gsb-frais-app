@@ -1,6 +1,5 @@
 import { View, Text, Pressable, StyleSheet } from "react-native";
 
-// La carte ne fait qu'afficher : les actions (onEdit, onDelete) sont fournies par le parent Dashboard
 export default function FraisCard({ frais, onEdit, onDelete }) {
   const montantValide =
     frais.montantvalide !== null && frais.montantvalide !== undefined
@@ -9,12 +8,10 @@ export default function FraisCard({ frais, onEdit, onDelete }) {
 
   return (
     <View style={styles.card}>
-      {/* Infos prioritaires : quelle note (mois) et combien */}
       <Text style={styles.title}>
         Note [{frais.id_frais}] Visiteur n°{frais.id_visiteur} - {frais.anneemois}
       </Text>
       <Text style={styles.montant}>Montant validé : {montantValide}</Text>
-      {/* Infos secondaires : plus petites, couleur discrète */}
       <Text style={styles.meta}>
         État : {frais.id_etat} · Justificatifs : {frais.nbjustificatifs}
       </Text>

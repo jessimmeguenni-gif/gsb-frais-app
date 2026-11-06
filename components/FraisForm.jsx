@@ -3,7 +3,6 @@ import { View, Text, TextInput, Pressable } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { fraisFormStyles as styles } from "../styles/fraisFormStyles.js";
 
-// Le formulaire ne fait que la saisie : il remonte les valeurs à l'écran via onSubmit
 export default function FraisForm({ frais = null, onSubmit }) {
   // Utilisé uniquement pour les boutons frais hors forfait / au forfait (pas encore implémentés)
   const navigation = useNavigation();

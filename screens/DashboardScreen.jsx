@@ -19,7 +19,6 @@ import { getFraisList, deleteFrais } from "../services/fraisService";
 export default function DashboardScreen({ navigation }) {
   const { user, token } = useAuth();
 
-  // États
   const [fraisList, setFraisList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -27,7 +26,6 @@ export default function DashboardScreen({ navigation }) {
   const [minMontant, setMinMontant] = useState("");
   const [error, setError] = useState("");
 
-  // Rechargement de la liste à CHAQUE retour sur l'écran (après ajout / modification)
   useFocusEffect(
     useCallback(() => {
       const fetchFrais = async () => {
@@ -45,7 +43,6 @@ export default function DashboardScreen({ navigation }) {
     }, [user, token])
   );
 
-  // Filtres chaînés : montant validé non nul (optionnel) → recherche → montant minimum
   const seuil = parseFloat(minMontant);
   const filteredFrais = fraisList
     .filter((f) => !filterNonNull || f.montantvalide !== null)
@@ -56,12 +53,11 @@ export default function DashboardScreen({ navigation }) {
     )
     .filter((f) => isNaN(seuil) || (f.montantvalide !== null && parseFloat(f.montantvalide) > seuil));
 
-  // Ouverture du formulaire de modification : on ne passe que l'id
+  // Ouverture du formulaire de modification
   function handleEdit(id) {
     navigation.navigate("FraisEdit", { id });
   }
 
-  // Suppression côté API puis côté liste affichée
   async function removeFrais(id) {
     try {
       await deleteFrais(id, token);
@@ -71,7 +67,6 @@ export default function DashboardScreen({ navigation }) {
     }
   }
 
-  // Confirmation avant suppression (Alert sur mobile, window.confirm sur le web)
   const handleDelete = (id) => {
     const message = "Êtes-vous sûr de vouloir supprimer cette note de frais ?";
     if (Platform.OS === "web") {

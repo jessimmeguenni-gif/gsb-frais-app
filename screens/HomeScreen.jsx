@@ -10,7 +10,6 @@ export default function HomeScreen() {
       <Navbar />
       <View style={styles.container}>
         <Text style={styles.title}>Bienvenue sur GSB Frais</Text>
-        {/* ?. évite une erreur si user vaut encore null */}
         {user ? (
           <Text style={styles.text}>Bonjour {user?.prenom_visiteur} !</Text>
         ) : (

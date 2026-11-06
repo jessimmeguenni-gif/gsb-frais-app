@@ -14,22 +14,18 @@ export default function LoginScreen() {
   // 2. Récupération de la fonction loginUser depuis le contexte d'authentification
   const { loginUser } = useAuth();
 
-  // 3. Soumission du formulaire : PAS de navigation.navigate() ici.
-  // C'est le changement de user dans le contexte qui fait basculer AppNavigator
-  // sur le groupe "connecte" (et donc sur Dashboard).
   const handleSubmit = async () => {
     setSubmitting(true); // Indique que la soumission est en cours
     setError(""); // Réinitialise l'erreur avant de tenter la connexion
     try {
       await loginUser(login, password);
     } catch (e) {
-      setError(e.message); // Affiche l'erreur à l'utilisateur
+      setError(e.message);
     } finally {
       setSubmitting(false);
     }
   };
 
-  // 4. Rendu du formulaire de connexion
   return (
     <View style={{ flex: 1 }}>
       <Navbar />

@@ -7,12 +7,10 @@ const AuthContext = createContext();
 
 // 2. Fournisseur du contexte (AuthProvider)
 export function AuthProvider({ children }) {
-  // États : utilisateur connecté (null = non connecté), token, chargement de la session
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [sessionLoading, setSessionLoading] = useState(true);
 
-  // Restauration de la session au lancement de l'app (une seule fois au montage)
   useEffect(() => {
     const restoreSession = async () => {
       try {
@@ -31,7 +29,7 @@ export function AuthProvider({ children }) {
     restoreSession();
   }, []);
 
-  // 3. Fonction de connexion (appel réel à l'API)
+  // 3. Fonction de connexion
   async function loginUser(login, password) {
     let data;
     try {
@@ -39,8 +37,6 @@ export function AuthProvider({ children }) {
     } catch (e) {
       throw new Error("Impossible de joindre le serveur : vérifiez votre connexion internet.");
     }
-    // Si l'API ne renvoie pas de token, la connexion a échoué : on lève une erreur
-    // (attrapée par le catch de LoginScreen qui affiche le message)
     if (!data.token) {
       throw new Error(data.error || "Identifiants incorrects");
     }
@@ -69,13 +65,11 @@ export function useAuth() {
   return useContext(AuthContext);
 }
 
-// Lecture de l'utilisateur stocké (objet JS) ou null
 export const getCurrentUser = async () => {
   const raw = await AsyncStorage.getItem("user");
   return raw ? JSON.parse(raw) : null;
 };
 
-// Lecture du token stocké (déjà une chaîne) ou null
 export const getAuthToken = async () => {
   const token = await AsyncStorage.getItem("token");
   return token ? token : null;

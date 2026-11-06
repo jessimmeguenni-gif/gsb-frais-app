@@ -6,7 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import { getFrais, updateFrais } from "../services/fraisService";
 
 export default function FraisEditScreen({ navigation, route }) {
-  const { id } = route.params; // id passé par navigation.navigate("FraisEdit", { id })
+  const { id } = route.params;
   const { token } = useAuth();
   const [frais, setFrais] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -27,7 +27,6 @@ export default function FraisEditScreen({ navigation, route }) {
     fetchFrais();
   }, [id, token]);
 
-  // Appelée par FraisForm : on fusionne les valeurs saisies avec les champs non modifiables
   async function handleUpdate(values) {
     await updateFrais(
       {

@@ -13,7 +13,6 @@ async function request(endpoint, token, options = {}) {
       },
     });
   } catch (e) {
-    // fetch ne lève une erreur que si le serveur est injoignable (pas de réseau...)
     throw new Error("Impossible de joindre le serveur : vérifiez votre connexion internet.");
   }
 
